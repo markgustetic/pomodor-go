@@ -7,9 +7,8 @@ import (
 func main() {
 	fmt.Println("Started")
 
-	//p := pomdoro.Pomodoro{}
-
-	//p.Start()
+	p := Pomodoro{}
+	p.Start()
 
 	fmt.Println("Ended")
 }

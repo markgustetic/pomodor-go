@@ -1,4 +1,4 @@
-package pomodoro
+package main
 
 import "fmt"
 
