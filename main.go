@@ -1,7 +1,15 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func main() {
-  fmt.Println("Hello World")
+	fmt.Println("Started")
+
+	//p := pomdoro.Pomodoro{}
+
+	//p.Start()
+
+	fmt.Println("Ended")
 }
