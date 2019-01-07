@@ -10,7 +10,9 @@ func main() {
 	fmt.Println("Started")
 
 	p := pomodoro.Pomodoro{}
-	p.Start()
+	p.SetTimer()
+
+	p.SetBreak()
 
 	fmt.Println("Ended")
 }
