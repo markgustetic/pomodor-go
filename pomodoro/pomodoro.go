@@ -20,13 +20,30 @@ var pomodoroCount int
 func (p *Pomodoro) SetTimer() {
 	fmt.Println("Pomodoro Started")
 
-	timer := time.NewTimer(pomodoroTime)
-
-	<-timer.C
+	runLoop()
 
 	pomodoroCount++
 
 	fmt.Println("Pomodoro Finished")
+}
+
+func runLoop() {
+	tickerChannel := time.NewTicker(time.Millisecond * 100).C
+	doneChan := make(chan bool)
+
+	go func() {
+		time.Sleep(time.Second * 5)
+		doneChan <- true
+	}()
+
+	for {
+		select {
+		case <-tickerChannel:
+			fmt.Println("Ticker ticked")
+		case <-doneChan:
+			return
+		}
+	}
 }
 
 //SetBreak will start the break timer
