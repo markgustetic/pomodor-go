@@ -8,12 +8,6 @@ import (
 //Pomodoro is the struct used to call methods on the timer
 type Pomodoro struct{}
 
-//StatusChan will allow the caller to check the current time of the Pomodoro and check if it's finished
-type StatusChan struct {
-	doneChan      chan bool
-	currentSecond chan time.Duration
-}
-
 const (
 	pomodoroTime   time.Duration = 1 * time.Minute
 	shortBreakTime time.Duration = 1 * time.Minute
@@ -34,14 +28,11 @@ func (p *Pomodoro) SetTimer() {
 	fmt.Println("Pomodoro Finished")
 }
 
-func runLoop() StatusChan {
-	statusChan := StatusChan{}
+func runLoop() chan time.Duration {
+	statusChan := make(chan time.Duration)
 
 	tickerChannel := time.NewTicker(time.Second).C
 	doneChan := make(chan bool)
-
-	statusChan.doneChan = doneChan
-	//statusChan.currentSecond <- time.Minute * 25
 
 	go func() {
 		time.Sleep(time.Second * 5)
@@ -50,13 +41,14 @@ func runLoop() StatusChan {
 
 	go func() {
 		timeCount := time.Minute * 25
+		statusChan <- timeCount
 
 		for {
 			select {
 			case <-tickerChannel:
 				//fmt.Printf("\r%s", timeCount)
 				timeCount = timeCount - time.Second
-				statusChan.currentSecond <- timeCount
+				statusChan <- timeCount
 			case <-doneChan:
 				return
 			}
@@ -71,10 +63,10 @@ func printStatus() {
 
 	for {
 		select {
-		case <-statusChan.doneChan:
-			return
-		case currentSecond := <-statusChan.currentSecond:
+		case currentSecond := <-statusChan:
 			fmt.Printf("\r%s", currentSecond)
+		default:
+			return
 		}
 	}
 }
