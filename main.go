@@ -10,10 +10,10 @@ func main() {
 	fmt.Println("Started")
 
 	p := pomodoro.Pomodoro{}
+
 	p.SetTimer()
 
-	//Print a dot each minute?
-	//p.SetBreak()
+	p.SetBreak()
 
 	fmt.Println("Ended")
 }
