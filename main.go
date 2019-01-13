@@ -1,19 +1,25 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 
 	"github.com/markgustetic/pomodor-go/pomodoro"
 )
 
 func main() {
-	fmt.Println("Started")
-
 	p := pomodoro.Pomodoro{}
+	reader := bufio.NewReader(os.Stdin)
 
-	p.SetTimer()
+	for {
+		fmt.Println("Pomodoro Started")
+		p.SetTimer()
 
-	p.SetBreak()
+		fmt.Printf("\nBreak Started\n")
+		p.SetBreak()
 
-	fmt.Println("Ended")
+		fmt.Print("\nPress enter to start next Pomodoro")
+		reader.ReadString('\n')
+	}
 }

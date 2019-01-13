@@ -17,27 +17,20 @@ type StatusChan struct {
 const (
 	pomodoroTime   time.Duration = 1 * time.Minute
 	shortBreakTime time.Duration = 1 * time.Minute
-	longBreakTime  time.Duration = 1 * time.Minute
+	longBreakTime  time.Duration = 2 * time.Minute
 )
 
 var pomodoroCount int
 
 //SetTimer will start the pomodoro timer
 func (p *Pomodoro) SetTimer() {
-	fmt.Println("Pomodoro Started")
-
 	printStatus(pomodoroTime)
 
 	pomodoroCount++
-
-	fmt.Println()
-	fmt.Println("Pomodoro Finished")
 }
 
 //SetBreak will start the break timer
 func (p *Pomodoro) SetBreak() {
-	fmt.Println("Break Started")
-
 	var breakTime time.Duration
 
 	if pomodoroCount < 4 {
@@ -48,9 +41,6 @@ func (p *Pomodoro) SetBreak() {
 	}
 
 	printStatus(breakTime)
-
-	fmt.Println()
-	fmt.Println("Break Ended")
 }
 
 func printStatus(pomodoroDuration time.Duration) {
@@ -61,7 +51,6 @@ func printStatus(pomodoroDuration time.Duration) {
 	for {
 		select {
 		case <-statusChan.tickerChan:
-			//fmt.Printf("\r%s", timeCount)
 			fmt.Printf("\033[2K\r%s", timeCount)
 			timeCount = timeCount - time.Second
 		case <-statusChan.doneChan:
