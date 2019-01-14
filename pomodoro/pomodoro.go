@@ -1,7 +1,6 @@
 package pomodoro
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -10,8 +9,9 @@ type Pomodoro struct{}
 
 //StatusChan holds the two channels used to see where the timer is currently at
 type StatusChan struct {
-	tickerChan <-chan time.Time
-	doneChan   <-chan bool
+	TickerChan       <-chan time.Time
+	DoneChan         <-chan bool
+	PomodoroDuration time.Duration
 }
 
 const (
@@ -23,14 +23,16 @@ const (
 var pomodoroCount int
 
 //SetTimer will start the pomodoro timer
-func (p *Pomodoro) SetTimer() {
-	printStatus(pomodoroTime)
+func (p *Pomodoro) SetTimer() StatusChan {
+	statusChan := runTicker(pomodoroTime)
 
 	pomodoroCount++
+
+	return statusChan
 }
 
 //SetBreak will start the break timer
-func (p *Pomodoro) SetBreak() {
+func (p *Pomodoro) SetBreak() StatusChan {
 	var breakTime time.Duration
 
 	if pomodoroCount < 4 {
@@ -40,23 +42,9 @@ func (p *Pomodoro) SetBreak() {
 		pomodoroCount = 0
 	}
 
-	printStatus(breakTime)
-}
+	statusChan := runTicker(breakTime)
 
-func printStatus(pomodoroDuration time.Duration) {
-	statusChan := runTicker(pomodoroDuration)
-
-	timeCount := pomodoroDuration
-
-	for {
-		select {
-		case <-statusChan.tickerChan:
-			fmt.Printf("\033[2K\r%s", timeCount)
-			timeCount = timeCount - time.Second
-		case <-statusChan.doneChan:
-			return
-		}
-	}
+	return statusChan
 }
 
 func runTicker(pomodoroDuration time.Duration) StatusChan {
@@ -68,5 +56,5 @@ func runTicker(pomodoroDuration time.Duration) StatusChan {
 		doneChan <- true
 	}()
 
-	return StatusChan{tickerChan: tickerChan, doneChan: doneChan}
+	return StatusChan{TickerChan: tickerChan, DoneChan: doneChan, PomodoroDuration: pomodoroDuration}
 }
