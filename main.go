@@ -18,7 +18,9 @@ func main() {
 		statusChan := p.SetTimer()
 		getTime(statusChan)
 
-		fmt.Printf("\nBreak Started\n")
+		resetLine(fmt.Sprintf("Pomodoro Count: %d\n", p.PomodoroCount()))
+
+		fmt.Printf("Break Started\n")
 		statusChan = p.SetBreak()
 		getTime(statusChan)
 
@@ -33,10 +35,14 @@ func getTime(statusChan pomodoro.StatusChan) {
 	for {
 		select {
 		case <-statusChan.TickerChan:
-			fmt.Printf("\033[2K\r%s", timeCount)
+			resetLine(timeCount)
 			timeCount = timeCount - time.Second
 		case <-statusChan.DoneChan:
 			return
 		}
 	}
+}
+
+func resetLine(outputLine interface{}) {
+	fmt.Printf("\033[2K\r%s", outputLine)
 }

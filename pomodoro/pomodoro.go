@@ -5,7 +5,9 @@ import (
 )
 
 //Pomodoro is the struct used to call methods on the timer
-type Pomodoro struct{}
+type Pomodoro struct {
+	pomodoroCount int
+}
 
 //StatusChan holds the two channels used to see where the timer is currently at
 type StatusChan struct {
@@ -20,13 +22,11 @@ const (
 	longBreakTime  time.Duration = 2 * time.Minute
 )
 
-var pomodoroCount int
-
 //SetTimer will start the pomodoro timer
 func (p *Pomodoro) SetTimer() StatusChan {
 	statusChan := runTicker(pomodoroTime)
 
-	pomodoroCount++
+	p.pomodoroCount++
 
 	return statusChan
 }
@@ -35,16 +35,21 @@ func (p *Pomodoro) SetTimer() StatusChan {
 func (p *Pomodoro) SetBreak() StatusChan {
 	var breakTime time.Duration
 
-	if pomodoroCount < 4 {
+	if p.pomodoroCount < 4 {
 		breakTime = shortBreakTime
 	} else {
 		breakTime = longBreakTime
-		pomodoroCount = 0
+		p.pomodoroCount = 0
 	}
 
 	statusChan := runTicker(breakTime)
 
 	return statusChan
+}
+
+//PomodoroCount returns the number of Pomodoros completed
+func (p *Pomodoro) PomodoroCount() int {
+	return p.pomodoroCount
 }
 
 func runTicker(pomodoroDuration time.Duration) StatusChan {
